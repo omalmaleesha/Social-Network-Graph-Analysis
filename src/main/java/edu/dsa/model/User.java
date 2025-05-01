@@ -7,7 +7,6 @@ public class User {
     private String name;
     private Set<String> friends;
 
-
     public User(String name) {
         this.name = name;
         this.friends = new HashSet<>();
