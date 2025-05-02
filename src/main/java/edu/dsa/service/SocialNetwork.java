@@ -5,11 +5,16 @@ import edu.dsa.model.User;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class SocialNetwork {
     private Map<String, User> users = new HashMap<>();
+    private DSU dsu = new DSU();
 
     public void addUser(String name) {
-        users.putIfAbsent(name, new User(name));
+        if (!users.containsKey(name)) {
+            users.put(name, new User(name));
+            dsu.addUser(name);
+        }
     }
 
     public void addFriendship(String user1, String user2, int weight) {
@@ -17,6 +22,7 @@ public class SocialNetwork {
         addUser(user2);
         users.get(user1).addFriend(user2, weight);
         users.get(user2).addFriend(user1, weight);
+        dsu.union(user1, user2);
     }
 
     public List<String> getMutualFriends(String user1, String user2) {
@@ -139,5 +145,13 @@ public class SocialNetwork {
 
     private int getWeight(String user1, String user2) {
         return users.get(user1).getFriendshipWeight(user2);
+    }
+
+    public int getNumberOfCommunities() {
+        return dsu.getNumberOfCommunities();
+    }
+
+    public Map<String, List<String>> getCommunities() {
+        return dsu.getCommunities();
     }
 }
