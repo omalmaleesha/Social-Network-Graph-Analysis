@@ -27,5 +27,14 @@ public class Main {
         // Demonstrate community detection
         System.out.println("Number of Communities: " + sn.getNumberOfCommunities());
         System.out.println("Communities: " + sn.getCommunities());
+
+        // Print Alice's community
+        System.out.println("Alice's community: " + String.join(", ", sn.getCommunity("Alice")));
+
+        // Print summaries of all communities
+        System.out.println("Communities summary:");
+        for (String summary : sn.getCommunitySummaries()) {
+            System.out.println(summary);
+        }
     }
 }

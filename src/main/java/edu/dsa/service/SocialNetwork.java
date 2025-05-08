@@ -5,7 +5,6 @@ import edu.dsa.model.User;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class SocialNetwork {
     private Map<String, User> users = new HashMap<>();
     private DSU dsu = new DSU();
@@ -153,5 +152,27 @@ public class SocialNetwork {
 
     public Map<String, List<String>> getCommunities() {
         return dsu.getCommunities();
+    }
+
+    // New method to get a user's community
+    public List<String> getCommunity(String user) {
+        String root = dsu.find(user);
+        if (root == null) {
+            return List.of();
+        }
+        Map<String, List<String>> communities = dsu.getCommunities();
+        return communities.getOrDefault(root, List.of());
+    }
+
+    // New method to list all communities with sizes
+    public List<String> getCommunitySummaries() {
+        Map<String, List<String>> communities = dsu.getCommunities();
+        List<String> summaries = new ArrayList<>();
+        for (String root : communities.keySet()) {
+            int size = communities.get(root).size();
+            summaries.add("Community " + root + ": " + size + " members");
+        }
+        Collections.sort(summaries);
+        return summaries;
     }
 }
