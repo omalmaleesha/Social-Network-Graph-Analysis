@@ -154,7 +154,6 @@ public class SocialNetwork {
         return dsu.getCommunities();
     }
 
-    // New method to get a user's community
     public List<String> getCommunity(String user) {
         String root = dsu.find(user);
         if (root == null) {
@@ -164,7 +163,6 @@ public class SocialNetwork {
         return communities.getOrDefault(root, List.of());
     }
 
-    // New method to list all communities with sizes
     public List<String> getCommunitySummaries() {
         Map<String, List<String>> communities = dsu.getCommunities();
         List<String> summaries = new ArrayList<>();
@@ -174,5 +172,63 @@ public class SocialNetwork {
         }
         Collections.sort(summaries);
         return summaries;
+    }
+
+    // Degree Centrality: Returns the number of direct friends a user has
+    public int getDegreeCentrality(String user) {
+        if (!users.containsKey(user)) {
+            return 0;
+        }
+        return users.get(user).getFriends().size();
+    }
+
+    // Finds the user with the highest degree centrality
+    public String getMostConnectedUser() {
+        String mostConnected = null;
+        int maxDegree = -1;
+        for (String user : users.keySet()) {
+            int degree = getDegreeCentrality(user);
+            if (degree > maxDegree) {
+                maxDegree = degree;
+                mostConnected = user;
+            }
+        }
+        return mostConnected;
+    }
+
+    // Closeness Centrality: Measures how close a user is to all others
+    public double getClosenessCentrality(String user) {
+        if (!users.containsKey(user)) {
+            return 0.0;
+        }
+        int sumDistances = 0;
+        int count = 0;
+        for (String other : users.keySet()) {
+            if (!other.equals(user)) {
+                List<String> path = shortestPath(user, other);
+                if (!path.get(0).equals("No path found")) {
+                    sumDistances += path.size() - 1; // path length
+                    count++;
+                }
+            }
+        }
+        if (count == 0) {
+            return 0.0;
+        }
+        return (double) count / sumDistances; // Normalized closeness
+    }
+
+    // Finds the user with the highest closeness centrality
+    public String getUserWithHighestCloseness() {
+        String bestUser = null;
+        double maxCloseness = -1.0;
+        for (String user : users.keySet()) {
+            double closeness = getClosenessCentrality(user);
+            if (closeness > maxCloseness) {
+                maxCloseness = closeness;
+                bestUser = user;
+            }
+        }
+        return bestUser;
     }
 }
