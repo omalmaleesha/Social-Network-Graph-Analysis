@@ -38,9 +38,11 @@ public class SocialNetwork {
     }
 
     public List<String> suggestFriends(String user) {
+        if (!users.containsKey(user)) {
+            return List.of();
+        }
         Set<String> directFriends = users.get(user).getFriends();
         Map<String, Integer> suggestionCount = new HashMap<>();
-
         for (String friend : directFriends) {
             for (String fof : users.get(friend).getFriends()) {
                 if (!fof.equals(user) && !directFriends.contains(fof)) {
@@ -48,9 +50,19 @@ public class SocialNetwork {
                 }
             }
         }
-
+        int sizeU = directFriends.size();
         return suggestionCount.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .sorted((a, b) -> {
+                    String v1 = a.getKey();
+                    int count1 = a.getValue();
+                    int sizeV1 = users.get(v1).getFriends().size();
+                    double J1 = (double) count1 / (sizeU + sizeV1 - count1);
+                    String v2 = b.getKey();
+                    int count2 = b.getValue();
+                    int sizeV2 = users.get(v2).getFriends().size();
+                    double J2 = (double) count2 / (sizeU + sizeV2 - count2);
+                    return Double.compare(J2, J1); // descending order
+                })
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -174,7 +186,6 @@ public class SocialNetwork {
         return summaries;
     }
 
-    // Degree Centrality: Returns the number of direct friends a user has
     public int getDegreeCentrality(String user) {
         if (!users.containsKey(user)) {
             return 0;
@@ -182,7 +193,6 @@ public class SocialNetwork {
         return users.get(user).getFriends().size();
     }
 
-    // Finds the user with the highest degree centrality
     public String getMostConnectedUser() {
         String mostConnected = null;
         int maxDegree = -1;
@@ -196,7 +206,6 @@ public class SocialNetwork {
         return mostConnected;
     }
 
-    // Closeness Centrality: Measures how close a user is to all others
     public double getClosenessCentrality(String user) {
         if (!users.containsKey(user)) {
             return 0.0;
@@ -218,7 +227,6 @@ public class SocialNetwork {
         return (double) count / sumDistances; // Normalized closeness
     }
 
-    // Finds the user with the highest closeness centrality
     public String getUserWithHighestCloseness() {
         String bestUser = null;
         double maxCloseness = -1.0;
@@ -230,5 +238,70 @@ public class SocialNetwork {
             }
         }
         return bestUser;
+    }
+
+    private Map<String, Double> computePageRank() {
+        int N = users.size();
+        if (N == 0) {
+            return new HashMap<>();
+        }
+        double d = 0.85; // Damping factor
+        double threshold = 0.0001; // Convergence threshold
+        Map<String, Double> currentPR = new HashMap<>();
+        // Initialize PageRank for each user
+        for (String user : users.keySet()) {
+            currentPR.put(user, 1.0 / N);
+        }
+        boolean converged = false;
+        while (!converged) {
+            Map<String, Double> nextPR = new HashMap<>();
+            double maxChange = 0.0;
+            for (String u : users.keySet()) {
+                double sum = 0.0;
+                Set<String> friends = users.get(u).getFriends();
+                // Sum contributions from friends
+                for (String v : friends) {
+                    int degreeV = users.get(v).getFriends().size();
+                    if (degreeV > 0) {
+                        sum += currentPR.get(v) / degreeV;
+                    }
+                }
+                double newPR = (1 - d) / N + d * sum;
+                nextPR.put(u, newPR);
+                double change = Math.abs(newPR - currentPR.get(u));
+                if (change > maxChange) {
+                    maxChange = change;
+                }
+            }
+            currentPR = nextPR;
+            if (maxChange < threshold) {
+                converged = true;
+            }
+        }
+        return currentPR;
+    }
+
+    public double getPageRank(String user) {
+        if (!users.containsKey(user)) {
+            return 0.0;
+        }
+        Map<String, Double> pr = computePageRank();
+        return pr.get(user);
+    }
+
+    public String getMostInfluentialUser() {
+        Map<String, Double> pr = computePageRank();
+        if (pr.isEmpty()) {
+            return null;
+        }
+        String mostInfluential = null;
+        double maxPR = -1.0;
+        for (Map.Entry<String, Double> entry : pr.entrySet()) {
+            if (entry.getValue() > maxPR) {
+                maxPR = entry.getValue();
+                mostInfluential = entry.getKey();
+            }
+        }
+        return mostInfluential;
     }
 }
