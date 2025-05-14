@@ -49,5 +49,11 @@ public class Main {
         // Test Enhanced Friend Suggestions with Jaccard Similarity
         System.out.println("Enhanced Friend Suggestions for Alice: " + sn.suggestFriends("Alice"));
         System.out.println("Enhanced Friend Suggestions for Frank: " + sn.suggestFriends("Frank"));
+
+        // Test new features
+        System.out.println("\n--- New Network Analysis Features ---");
+
+        // Test Network Density
+        System.out.println("Network Density: " + sn.getNetworkDensity());
     }
 }

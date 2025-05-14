@@ -304,4 +304,15 @@ public class SocialNetwork {
         }
         return mostInfluential;
     }
+
+    public double getNetworkDensity() {
+        int n = users.size();
+        if (n < 2) return 0.0;
+        int edges = 0;
+        for (String user : users.keySet()) {
+            edges += users.get(user).getFriends().size();
+        }
+        edges /= 2; // Each edge counted twice
+        return (2.0 * edges) / (n * (n - 1));
+    }
 }
