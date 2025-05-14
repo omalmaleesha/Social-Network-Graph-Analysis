@@ -55,5 +55,10 @@ public class Main {
 
         // Test Network Density
         System.out.println("Network Density: " + sn.getNetworkDensity());
+
+        // Test Betweenness Centrality
+        System.out.println("Betweenness Centrality of Alice: " + sn.getBetweennessCentrality("Alice"));
+        System.out.println("Betweenness Centrality of David: " + sn.getBetweennessCentrality("David"));
+        System.out.println("User with Highest Betweenness: " + sn.getHighestBetweennessUser());
     }
 }

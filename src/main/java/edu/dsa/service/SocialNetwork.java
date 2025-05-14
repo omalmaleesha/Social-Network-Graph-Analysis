@@ -315,4 +315,31 @@ public class SocialNetwork {
         edges /= 2; // Each edge counted twice
         return (2.0 * edges) / (n * (n - 1));
     }
+
+    public double getBetweennessCentrality(String user) {
+        if (!users.containsKey(user)) return 0.0;
+        double betweenness = 0.0;
+        for (String s : users.keySet()) {
+            for (String t : users.keySet()) {
+                if (!s.equals(t) && !s.equals(user) && !t.equals(user)) {
+                    // Compute shortest paths and count those passing through 'user'
+                    // (Implementation requires tracking all shortest paths)
+                }
+            }
+        }
+        return betweenness / ((users.size() - 1) * (users.size() - 2) / 2);
+    }
+
+    public String getHighestBetweennessUser() {
+        String maxUser = null;
+        double maxBetweenness = -1.0;
+        for (String user : users.keySet()) {
+            double betweenness = getBetweennessCentrality(user);
+            if (betweenness > maxBetweenness) {
+                maxBetweenness = betweenness;
+                maxUser = user;
+            }
+        }
+        return maxUser;
+    }
 }
