@@ -60,5 +60,10 @@ public class Main {
         System.out.println("Betweenness Centrality of Alice: " + sn.getBetweennessCentrality("Alice"));
         System.out.println("Betweenness Centrality of David: " + sn.getBetweennessCentrality("David"));
         System.out.println("User with Highest Betweenness: " + sn.getHighestBetweennessUser());
+
+        // Test Clustering Coefficient
+        System.out.println("Clustering Coefficient of Alice: " + sn.getClusteringCoefficient("Alice"));
+        System.out.println("Clustering Coefficient of David: " + sn.getClusteringCoefficient("David"));
+        System.out.println("Average Clustering Coefficient: " + sn.getAverageClusteringCoefficient());
     }
 }

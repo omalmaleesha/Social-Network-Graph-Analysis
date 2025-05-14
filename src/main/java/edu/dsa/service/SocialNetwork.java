@@ -342,4 +342,34 @@ public class SocialNetwork {
         }
         return maxUser;
     }
+
+    public double getClusteringCoefficient(String user) {
+        if (!users.containsKey(user)) return 0.0;
+        Set<String> friends = users.get(user).getFriends();
+        int k = friends.size();
+        if (k < 2) return 0.0;
+        int edges = 0;
+        for (String f1 : friends) {
+            for (String f2 : friends) {
+                if (!f1.equals(f2) && users.get(f1).getFriends().contains(f2)) {
+                    edges++;
+                }
+            }
+        }
+        edges /= 2; // Each edge counted twice
+        return (2.0 * edges) / (k * (k - 1));
+    }
+
+    public double getAverageClusteringCoefficient() {
+        double sum = 0.0;
+        int count = 0;
+        for (String user : users.keySet()) {
+            double cc = getClusteringCoefficient(user);
+            if (cc > 0) { // Only count users with at least 2 friends
+                sum += cc;
+                count++;
+            }
+        }
+        return count > 0 ? sum / count : 0.0;
+    }
 }
