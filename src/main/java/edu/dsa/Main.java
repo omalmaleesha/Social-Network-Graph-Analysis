@@ -2,6 +2,9 @@ package edu.dsa;
 
 import edu.dsa.service.SocialNetwork;
 
+import java.util.List;
+import java.util.Set;
+
 public class Main {
     public static void main(String[] args) {
         // Create a new SocialNetwork instance
@@ -65,5 +68,23 @@ public class Main {
         System.out.println("Clustering Coefficient of Alice: " + sn.getClusteringCoefficient("Alice"));
         System.out.println("Clustering Coefficient of David: " + sn.getClusteringCoefficient("David"));
         System.out.println("Average Clustering Coefficient: " + sn.getAverageClusteringCoefficient());
+
+        // Test Influence Maximization: Find top 2 influencers
+        System.out.println("--- Influence Maximization ---");
+        Set<String> influencers = sn.findInfluencers(2);
+        System.out.println("Top 2 influencers: " + influencers);
+
+        // Test Link Prediction: Predict top 2 potential new friends for Alice
+        System.out.println("\n--- Link Prediction ---");
+        List<String> predictedFriends = sn.predictNewFriends("Alice", 2);
+        System.out.println("Top 2 predicted new friends for Alice: " + predictedFriends);
+
+        // Test Network Motif Analysis: Triangles for Bob and in the entire network
+        System.out.println("\n--- Network Motif Analysis ---");
+        int bobTriangles = sn.getTriangleCount("Bob");
+        System.out.println("Number of triangles for Bob: " + bobTriangles);
+        int networkTriangles = sn.getNetworkTriangleCount();
+        System.out.println("Total number of triangles in the network: " + networkTriangles);
+
     }
 }

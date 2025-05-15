@@ -372,4 +372,69 @@ public class SocialNetwork {
         }
         return count > 0 ? sum / count : 0.0;
     }
+
+    public List<String> predictNewFriends(String user, int topN) {
+        Map<String, Integer> scores = new HashMap<>();
+        Set<String> friends = users.get(user).getFriends();
+        for (String other : users.keySet()) {
+            if (!other.equals(user) && !friends.contains(other)) {
+                Set<String> otherFriends = users.get(other).getFriends();
+                int common = 0;
+                for (String f : friends) {
+                    if (otherFriends.contains(f)) common++;
+                }
+                scores.put(other, common);
+            }
+        }
+        return scores.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(topN)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+    public Set<String> findInfluencers(int k) {
+        Set<String> influencers = new HashSet<>();
+        for (int i = 0; i < k; i++) {
+            String bestUser = null;
+            double maxMarginalGain = -1;
+            for (String user : users.keySet()) {
+                if (!influencers.contains(user)) {
+                    double gain = estimateMarginalGain(influencers, user);
+                    if (gain > maxMarginalGain) {
+                        maxMarginalGain = gain;
+                        bestUser = user;
+                    }
+                }
+            }
+            if (bestUser != null) influencers.add(bestUser);
+        }
+        return influencers;
+    }
+
+    private double estimateMarginalGain(Set<String> currentSet, String user) {
+        // Placeholder: Use degree as a simple heuristic
+        return users.get(user).getFriends().size();
+    }
+
+    public int getTriangleCount(String user) {
+        if (!users.containsKey(user)) return 0;
+        Set<String> friends = users.get(user).getFriends();
+        int triangles = 0;
+        for (String f1 : friends) {
+            for (String f2 : friends) {
+                if (!f1.equals(f2) && users.get(f1).getFriends().contains(f2)) {
+                    triangles++;
+                }
+            }
+        }
+        return triangles / 2; // Each triangle counted twice
+    }
+
+    public int getNetworkTriangleCount() {
+        int total = 0;
+        for (String user : users.keySet()) {
+            total += getTriangleCount(user);
+        }
+        return total / 3; // Each triangle counted by all three users
+    }
 }
