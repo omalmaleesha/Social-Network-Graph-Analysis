@@ -36,13 +36,29 @@ This project is a **Social Network Graph Analysis** tool built in **Java** using
 ## 🛠️ Project Structure
 
 ```
-├── model/
-│   └── User.java
-├── service/
-│   ├── SocialNetwork.java
-│   └── DSU.java
-├── Main.java
-└── README.md
+├── src/main/java/edu/dsa/
+│   ├── model/
+│   │   └── User.java                    # User data model
+│   ├── service/
+│   │   ├── SocialNetwork.java           # Core network analysis logic
+│   │   └── DSU.java                     # Disjoint Set Union for communities
+│   ├── controller/
+│   │   └── SocialNetworkController.java # REST API endpoints
+│   ├── config/
+│   │   └── WebConfig.java               # Web configuration
+│   ├── Main.java                        # Original console application
+│   └── SocialNetworkApplication.java    # Spring Boot web application
+├── src/main/resources/
+│   ├── static/
+│   │   ├── index.html                   # Main web interface
+│   │   ├── styles.css                   # Modern CSS styling
+│   │   └── script.js                    # Interactive JavaScript
+│   └── application.properties           # Spring Boot configuration
+├── run-ui.bat                           # Windows launcher script
+├── run-ui.sh                            # Unix launcher script
+├── pom.xml                              # Maven dependencies
+├── README.md                            # This file
+└── UI_README.md                         # Detailed UI documentation
 ```
 
 ---
@@ -82,14 +98,37 @@ Enhanced Friend Suggestions for Frank: [Heidi]
 
 ---
 
+## 🎨 NEW: Interactive Web UI
+
+**🚀 We've added a beautiful, modern web-based user interface!**
+
+### Features:
+- **Interactive Graph Visualization** with D3.js
+- **Real-time Network Analysis** and statistics
+- **Community Detection** with color-coded visualization
+- **Path Finding** with animated highlighting
+- **Friend Suggestions** powered by AI algorithms
+- **Dark/Light Theme** support
+- **Responsive Design** for mobile and desktop
+- **Export Functionality** for network data
+
+### How to Run the Web UI:
+1. **Quick Start**: Double-click `run-ui.bat` (Windows) or `run-ui.sh` (Linux/Mac)
+2. **With Maven**: Run `mvn spring-boot:run`
+3. **With IDE**: Open `SocialNetworkApplication.java` and run it
+4. **Open Browser**: Navigate to `http://localhost:8080`
+
+📖 **Detailed UI Documentation**: See [UI_README.md](UI_README.md) for complete instructions and features.
+
 ## 🧱 Future Enhancements
 
-- GUI or Web interface (JavaFX or Spring Boot) for interactive network visualization
+- ✅ ~~GUI or Web interface~~ **COMPLETED!**
 - Add user profile data (e.g., interests, location)
-- Real-time friend graph visualization using graph libraries
+- Real-time collaboration with WebSocket support
 - Persistent storage using file or database
-- Advanced centrality measures (e.g., Betweenness Centrality)
-- Detection of bridges and articulation points in the network
+- 3D graph visualization using Three.js
+- Mobile app development
+- Advanced filtering and search capabilities
 
 ---
 

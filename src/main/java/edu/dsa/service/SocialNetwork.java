@@ -437,4 +437,23 @@ public class SocialNetwork {
         }
         return total / 3; // Each triangle counted by all three users
     }
+
+    // Additional methods for REST API support
+    public List<String> getAllUsers() {
+        return new ArrayList<>(users.keySet());
+    }
+
+    public Set<String> getFriends(String user) {
+        if (!users.containsKey(user)) {
+            return new HashSet<>();
+        }
+        return users.get(user).getFriends();
+    }
+
+    public int getFriendshipWeight(String user1, String user2) {
+        if (!users.containsKey(user1) || !users.containsKey(user2)) {
+            return 0;
+        }
+        return users.get(user1).getFriendshipWeight(user2);
+    }
 }
