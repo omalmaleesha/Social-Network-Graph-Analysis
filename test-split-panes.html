@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Network Graph Analysis</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Social Network Graph Analysis - Split Panes Test</title>
+    <link rel="stylesheet" href="src/main/resources/static/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -13,7 +13,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1><i class="fas fa-project-diagram"></i> Social Network Analysis</h1>
+                <h1><i class="fas fa-project-diagram"></i> Social Network Analysis - Split Panes Demo</h1>
                 <div class="header-controls">
                     <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme">
                         <i class="fas fa-moon"></i>
@@ -36,7 +36,7 @@
                             <aside class="sidebar">
                                 <div class="sidebar-section">
                                     <h3><i class="fas fa-users"></i> Network Controls</h3>
-
+                                    
                                     <!-- Add User Form -->
                                     <div class="form-group">
                                         <label for="user-name">Add User</label>
@@ -102,10 +102,6 @@
                                             <span class="stat-label">Network Density</span>
                                             <span class="stat-value" id="network-density">0.00</span>
                                         </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Avg Clustering</span>
-                                            <span class="stat-value" id="avg-clustering">0.00</span>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -120,10 +116,6 @@
                                         <div class="top-user-item">
                                             <span class="top-user-label">Most Influential</span>
                                             <span class="top-user-value" id="most-influential">-</span>
-                                        </div>
-                                        <div class="top-user-item">
-                                            <span class="top-user-label">Highest Closeness</span>
-                                            <span class="top-user-value" id="highest-closeness">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -165,15 +157,15 @@
                                         </div>
                                         <div class="graph-legend">
                                             <div class="legend-item">
-                                                <div class="legend-color" style="background: var(--primary-color)"></div>
+                                                <div class="legend-color" style="background: #3b82f6"></div>
                                                 <span>Regular User</span>
                                             </div>
                                             <div class="legend-item">
-                                                <div class="legend-color" style="background: var(--accent-color)"></div>
+                                                <div class="legend-color" style="background: #f59e0b"></div>
                                                 <span>Selected User</span>
                                             </div>
                                             <div class="legend-item">
-                                                <div class="legend-color" style="background: var(--success-color)"></div>
+                                                <div class="legend-color" style="background: #10b981"></div>
                                                 <span>Path Highlighted</span>
                                             </div>
                                         </div>
@@ -223,16 +215,13 @@
                             <button class="tab-btn" data-tab="suggestions">
                                 <i class="fas fa-lightbulb"></i> Friend Suggestions
                             </button>
-                            <button class="tab-btn" data-tab="analysis">
-                                <i class="fas fa-analytics"></i> Advanced Analysis
-                            </button>
                         </div>
-
+                        
                         <div class="tab-content">
                             <div id="communities-tab" class="tab-pane active">
                                 <div id="communities-list"></div>
                             </div>
-
+                            
                             <div id="suggestions-tab" class="tab-pane">
                                 <div class="suggestions-controls">
                                     <select id="suggestions-user" class="form-control">
@@ -242,39 +231,154 @@
                                 </div>
                                 <div id="suggestions-list"></div>
                             </div>
-
-                            <div id="analysis-tab" class="tab-pane">
-                                <div class="analysis-grid">
-                                    <div class="analysis-card">
-                                        <h4>Centrality Analysis</h4>
-                                        <div id="centrality-chart"></div>
-                                    </div>
-                                    <div class="analysis-card">
-                                        <h4>Network Metrics</h4>
-                                        <div id="network-metrics"></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </section>
                 </div>
             </div>
         </main>
-
-
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay hidden">
-        <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Processing...</p>
-        </div>
     </div>
 
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="script.js"></script>
+    <!-- Test Mode Script -->
+    <script>
+        // Mock API for testing UI without backend
+        class MockSocialNetworkAPI {
+            constructor() {
+                this.users = new Map();
+                this.connections = [];
+                this.initSampleData();
+            }
+
+            initSampleData() {
+                // Add sample users and connections
+                const sampleUsers = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+                const sampleConnections = [
+                    ['Alice', 'Bob', 5],
+                    ['Alice', 'Charlie', 3],
+                    ['Bob', 'David', 2],
+                    ['Charlie', 'David', 4],
+                    ['David', 'Eve', 1]
+                ];
+
+                sampleUsers.forEach(user => this.addUserInternal(user));
+                sampleConnections.forEach(([user1, user2, weight]) => this.addFriendshipInternal(user1, user2, weight));
+            }
+
+            addUserInternal(name) {
+                if (!this.users.has(name)) {
+                    this.users.set(name, {
+                        name: name,
+                        friends: new Set(),
+                        friendWeights: new Map()
+                    });
+                }
+            }
+
+            addFriendshipInternal(user1, user2, weight) {
+                this.addUserInternal(user1);
+                this.addUserInternal(user2);
+                
+                this.users.get(user1).friends.add(user2);
+                this.users.get(user2).friends.add(user1);
+                this.users.get(user1).friendWeights.set(user2, weight);
+                this.users.get(user2).friendWeights.set(user1, weight);
+                
+                const existingConnection = this.connections.find(conn => 
+                    (conn.source === user1 && conn.target === user2) ||
+                    (conn.source === user2 && conn.target === user1)
+                );
+                
+                if (!existingConnection) {
+                    this.connections.push({ source: user1, target: user2, weight: weight });
+                }
+            }
+
+            async addUser(name) {
+                this.addUserInternal(name);
+                return { message: 'User added successfully', user: name };
+            }
+
+            async hasUser(name) {
+                return this.users.has(name);
+            }
+
+            async addFriendship(user1, user2, weight) {
+                this.addFriendshipInternal(user1, user2, weight);
+                return { message: 'Friendship created successfully' };
+            }
+
+            async getAllUsers() {
+                return Array.from(this.users.keys());
+            }
+
+            async getGraphData() {
+                const nodes = Array.from(this.users.keys()).map(id => ({ id }));
+                const links = this.connections.map(conn => ({
+                    source: conn.source,
+                    target: conn.target,
+                    weight: conn.weight
+                }));
+                return { nodes, links };
+            }
+
+            async getUserStats(userId) {
+                const user = this.users.get(userId);
+                if (!user) return null;
+                
+                return {
+                    connections: user.friends.size,
+                    degreeCentrality: user.friends.size,
+                    closenessCentrality: Math.random() * 0.5 + 0.3,
+                    pageRank: Math.random() * 0.3 + 0.1,
+                    clusteringCoefficient: Math.random() * 0.8 + 0.1,
+                    friends: Array.from(user.friends)
+                };
+            }
+
+            async getNetworkStats() {
+                return {
+                    totalUsers: this.users.size,
+                    totalConnections: this.connections.length,
+                    totalCommunities: 2,
+                    networkDensity: this.connections.length / (this.users.size * (this.users.size - 1) / 2),
+                    avgClustering: Math.random() * 0.6 + 0.2,
+                    mostConnected: 'David',
+                    mostInfluential: 'David'
+                };
+            }
+
+            async getCommunities() {
+                // Simple mock communities
+                return [
+                    ['Alice', 'Bob', 'Charlie', 'David', 'Eve']
+                ];
+            }
+
+            async shortestPath(user1, user2) {
+                // Simple BFS mock
+                return [user1, 'Bob', user2];
+            }
+
+            async findStrongestPath(user1, user2) {
+                return [user1, 'Alice', user2];
+            }
+
+            async findWeakestPath(user1, user2) {
+                return [user1, 'Charlie', user2];
+            }
+
+            async suggestFriends(userId) {
+                const allUsers = Array.from(this.users.keys());
+                const user = this.users.get(userId);
+                return allUsers.filter(u => u !== userId && !user.friends.has(u)).slice(0, 3);
+            }
+        }
+
+        // Replace the real API with mock for testing
+        window.SocialNetworkAPI = MockSocialNetworkAPI;
+    </script>
+    <script src="src/main/resources/static/script.js"></script>
 </body>
 </html>

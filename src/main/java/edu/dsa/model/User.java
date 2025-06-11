@@ -22,7 +22,7 @@ public class User {
     }
 
     public int getFriendshipWeight(String friend) {
-        return friendsWithWeights.get(friend);
+        return friendsWithWeights.getOrDefault(friend, 0);
     }
 
     public void addFriend(String friendName, int weight) {

@@ -34,11 +34,16 @@ public class SocialNetworkController {
     public ResponseEntity<Map<String, String>> addUser(@RequestBody Map<String, String> request) {
         String userName = request.get("name");
         if (userName == null || userName.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "User name is required"));
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "User name is required");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
-        
+
         socialNetwork.addUser(userName);
-        return ResponseEntity.ok(Map.of("message", "User added successfully", "user", userName));
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "User added successfully");
+        successResponse.put("user", userName);
+        return ResponseEntity.ok(successResponse);
     }
     
     @PostMapping("/friendships")
@@ -47,17 +52,21 @@ public class SocialNetworkController {
         String user1 = (String) request.get("user1");
         String user2 = (String) request.get("user2");
         Integer weight = (Integer) request.get("weight");
-        
+
         if (user1 == null || user2 == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Both users are required"));
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Both users are required");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
-        
+
         if (weight == null) {
             weight = 5; // Default weight
         }
-        
+
         socialNetwork.addFriendship(user1, user2, weight);
-        return ResponseEntity.ok(Map.of("message", "Friendship created successfully"));
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "Friendship created successfully");
+        return ResponseEntity.ok(successResponse);
     }
     
     @GetMapping("/users")

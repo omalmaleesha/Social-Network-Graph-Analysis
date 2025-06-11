@@ -1,4 +1,230 @@
 // Social Network Graph Analysis - Frontend JavaScript
+
+// Split Pane Manager for resizable panels
+class SplitPaneManager {
+    constructor() {
+        this.splitters = [];
+        this.isDragging = false;
+        this.currentSplitter = null;
+        this.startPos = { x: 0, y: 0 };
+        this.startSizes = {};
+
+        this.init();
+    }
+
+    init() {
+        this.setupSplitters();
+        this.loadSavedSizes();
+        this.setupEventListeners();
+    }
+
+    setupSplitters() {
+        const splitters = document.querySelectorAll('.splitter');
+        splitters.forEach(splitter => {
+            this.splitters.push({
+                element: splitter,
+                direction: splitter.dataset.direction,
+                target: splitter.dataset.target
+            });
+        });
+    }
+
+    setupEventListeners() {
+        this.splitters.forEach(splitter => {
+            splitter.element.addEventListener('mousedown', (e) => {
+                this.startDrag(e, splitter);
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            this.onDrag(e);
+        });
+
+        document.addEventListener('mouseup', () => {
+            this.endDrag();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.handleWindowResize();
+        });
+    }
+
+    startDrag(e, splitter) {
+        e.preventDefault();
+        this.isDragging = true;
+        this.currentSplitter = splitter;
+
+        this.startPos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+
+        // Store initial sizes
+        const targetPane = document.querySelector(`.${splitter.target}`);
+        if (splitter.direction === 'vertical') {
+            this.startSizes.width = targetPane.offsetWidth;
+        } else {
+            this.startSizes.height = targetPane.offsetHeight;
+        }
+
+        // Add dragging class for visual feedback
+        document.body.classList.add('dragging');
+        splitter.element.classList.add('dragging');
+
+        // Disable text selection
+        document.body.style.userSelect = 'none';
+    }
+
+    onDrag(e) {
+        if (!this.isDragging || !this.currentSplitter) return;
+
+        e.preventDefault();
+
+        const splitter = this.currentSplitter;
+        const targetPane = document.querySelector(`.${splitter.target}`);
+
+        if (splitter.direction === 'vertical') {
+            const deltaX = e.clientX - this.startPos.x;
+            const newWidth = this.startSizes.width + deltaX;
+
+            // Apply constraints
+            const minWidth = this.getMinSize(targetPane, 'width');
+            const maxWidth = this.getMaxSize(targetPane, 'width');
+            const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+            targetPane.style.flex = `0 0 ${constrainedWidth}px`;
+        } else {
+            const deltaY = e.clientY - this.startPos.y;
+            const newHeight = this.startSizes.height + deltaY;
+
+            // Apply constraints
+            const minHeight = this.getMinSize(targetPane, 'height');
+            const maxHeight = this.getMaxSize(targetPane, 'height');
+            const constrainedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+
+            targetPane.style.flex = `0 0 ${constrainedHeight}px`;
+        }
+
+        // Trigger graph resize if graph pane is affected
+        this.triggerGraphResize();
+    }
+
+    endDrag() {
+        if (!this.isDragging) return;
+
+        this.isDragging = false;
+
+        // Remove dragging classes
+        document.body.classList.remove('dragging');
+        if (this.currentSplitter) {
+            this.currentSplitter.element.classList.remove('dragging');
+        }
+
+        // Re-enable text selection
+        document.body.style.userSelect = '';
+
+        // Save current sizes
+        this.saveSizes();
+
+        this.currentSplitter = null;
+    }
+
+    getMinSize(element, dimension) {
+        const style = getComputedStyle(element);
+        const property = dimension === 'width' ? 'minWidth' : 'minHeight';
+        return parseInt(style[property]) || (dimension === 'width' ? 200 : 150);
+    }
+
+    getMaxSize(element, dimension) {
+        const style = getComputedStyle(element);
+        const property = dimension === 'width' ? 'maxWidth' : 'maxHeight';
+        const maxValue = parseInt(style[property]);
+
+        if (maxValue && maxValue !== 0) {
+            return maxValue;
+        }
+
+        // Default max sizes based on viewport
+        if (dimension === 'width') {
+            return window.innerWidth * 0.6;
+        } else {
+            return window.innerHeight * 0.6;
+        }
+    }
+
+    saveSizes() {
+        const sizes = {};
+
+        // Save all pane sizes
+        const panes = ['left-pane', 'right-pane', 'bottom-pane'];
+        panes.forEach(paneClass => {
+            const pane = document.querySelector(`.${paneClass}`);
+            if (pane) {
+                const rect = pane.getBoundingClientRect();
+                sizes[paneClass] = {
+                    width: rect.width,
+                    height: rect.height
+                };
+            }
+        });
+
+        localStorage.setItem('splitPaneSizes', JSON.stringify(sizes));
+    }
+
+    loadSavedSizes() {
+        const savedSizes = localStorage.getItem('splitPaneSizes');
+        if (!savedSizes) return;
+
+        try {
+            const sizes = JSON.parse(savedSizes);
+
+            Object.keys(sizes).forEach(paneClass => {
+                const pane = document.querySelector(`.${paneClass}`);
+                if (pane && sizes[paneClass]) {
+                    const { width, height } = sizes[paneClass];
+
+                    if (paneClass === 'left-pane' || paneClass === 'right-pane') {
+                        pane.style.flex = `0 0 ${width}px`;
+                    } else if (paneClass === 'bottom-pane') {
+                        pane.style.flex = `0 0 ${height}px`;
+                    }
+                }
+            });
+        } catch (error) {
+            console.warn('Failed to load saved split pane sizes:', error);
+        }
+    }
+
+    handleWindowResize() {
+        // Adjust pane sizes if they exceed new window dimensions
+        const panes = document.querySelectorAll('.split-pane');
+        panes.forEach(pane => {
+            const rect = pane.getBoundingClientRect();
+            const maxWidth = window.innerWidth * 0.6;
+            const maxHeight = window.innerHeight * 0.6;
+
+            if (rect.width > maxWidth) {
+                pane.style.flex = `0 0 ${maxWidth}px`;
+            }
+            if (rect.height > maxHeight) {
+                pane.style.flex = `0 0 ${maxHeight}px`;
+            }
+        });
+
+        this.triggerGraphResize();
+    }
+
+    triggerGraphResize() {
+        // Notify the graph to resize after a short delay
+        setTimeout(() => {
+            if (window.app && window.app.handleGraphResize) {
+                window.app.handleGraphResize();
+            }
+        }, 100);
+    }
+}
+
 class SocialNetworkUI {
     constructor() {
         this.socialNetwork = new SocialNetworkAPI();
@@ -7,10 +233,13 @@ class SocialNetworkUI {
         this.showLabels = true;
         this.showCommunities = false;
         this.currentPath = [];
-        
+        this.cachedCommunities = [];
+        this.splitPaneManager = null;
+
         this.initializeUI();
         this.setupEventListeners();
         this.initializeGraph();
+        this.initializeSplitPanes();
         this.loadSampleData();
     }
 
@@ -113,17 +342,23 @@ class SocialNetworkUI {
     initializeGraph() {
         const svg = d3.select('#graph-svg');
         const container = document.getElementById('graph-svg-container');
-        
+
         // Set up SVG dimensions
-        const updateDimensions = () => {
+        this.updateGraphDimensions = () => {
             const rect = container.getBoundingClientRect();
             svg.attr('width', rect.width).attr('height', rect.height);
             this.width = rect.width;
             this.height = rect.height;
+
+            // Update force simulation center
+            if (this.simulation) {
+                this.simulation.force('center', d3.forceCenter(this.width / 2, this.height / 2));
+                this.simulation.alpha(0.3).restart();
+            }
         };
-        
-        updateDimensions();
-        window.addEventListener('resize', updateDimensions);
+
+        this.updateGraphDimensions();
+        window.addEventListener('resize', this.updateGraphDimensions);
 
         // Create graph groups
         this.graphGroup = svg.append('g').attr('class', 'graph-group');
@@ -146,6 +381,21 @@ class SocialNetworkUI {
             .force('charge', d3.forceManyBody().strength(-300))
             .force('center', d3.forceCenter(this.width / 2, this.height / 2))
             .force('collision', d3.forceCollide().radius(30));
+    }
+
+    initializeSplitPanes() {
+        // Initialize split pane manager
+        this.splitPaneManager = new SplitPaneManager();
+
+        // Make graph resize handler available globally
+        window.app = this;
+    }
+
+    handleGraphResize() {
+        // Update graph dimensions when split panes are resized
+        if (this.updateGraphDimensions) {
+            this.updateGraphDimensions();
+        }
     }
 
     async loadSampleData() {
@@ -247,6 +497,10 @@ class SocialNetworkUI {
     async updateGraph() {
         try {
             this.graphData = await this.socialNetwork.getGraphData();
+            // Update cached communities for color mapping
+            if (this.showCommunities) {
+                this.cachedCommunities = await this.socialNetwork.getCommunities();
+            }
             this.renderGraph();
         } catch (error) {
             console.error('Error updating graph:', error);
@@ -254,6 +508,11 @@ class SocialNetworkUI {
     }
 
     renderGraph() {
+        if (!this.graphData || !this.graphData.nodes || !this.graphData.links) {
+            console.warn('Graph data not available');
+            return;
+        }
+
         // Update links
         const links = this.linksGroup.selectAll('.link')
             .data(this.graphData.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
@@ -262,7 +521,7 @@ class SocialNetworkUI {
 
         const linksEnter = links.enter().append('line')
             .attr('class', 'link')
-            .attr('stroke-width', d => Math.sqrt(d.weight) * 2);
+            .attr('stroke-width', d => Math.sqrt(d.weight || 1) * 2);
 
         const linksUpdate = linksEnter.merge(links);
 
@@ -282,7 +541,8 @@ class SocialNetworkUI {
             this.selectUser(d.id);
         });
 
-        const nodesUpdate = nodesEnter.merge(nodes);
+        const nodesUpdate = nodesEnter.merge(nodes)
+            .attr('fill', this.getNodeColor.bind(this)); // Update colors on re-render
 
         // Update labels
         const labels = this.labelsGroup.selectAll('.node-label')
@@ -295,7 +555,8 @@ class SocialNetworkUI {
             .text(d => d.id)
             .style('display', this.showLabels ? 'block' : 'none');
 
-        const labelsUpdate = labelsEnter.merge(labels);
+        const labelsUpdate = labelsEnter.merge(labels)
+            .style('display', this.showLabels ? 'block' : 'none');
 
         // Update simulation
         this.simulation.nodes(this.graphData.nodes);
@@ -321,12 +582,27 @@ class SocialNetworkUI {
     }
 
     getNodeColor(d) {
+        // Define community colors
+        const communityColors = [
+            '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+            '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6b7280'
+        ];
+
         if (this.showCommunities) {
-            const community = this.socialNetwork.getCommunity(d.id);
-            const communityIndex = community.indexOf(d.id) % 10;
-            return `var(--community-${communityIndex})`;
+            // Find which community this user belongs to
+            const communities = this.cachedCommunities || [];
+            for (let i = 0; i < communities.length; i++) {
+                if (communities[i].includes(d.id)) {
+                    return communityColors[i % communityColors.length];
+                }
+            }
         }
-        return this.selectedUser === d.id ? 'var(--accent-color)' : 'var(--primary-color)';
+
+        // Default colors
+        if (this.selectedUser === d.id) {
+            return '#f59e0b'; // Accent color
+        }
+        return '#3b82f6'; // Primary color
     }
 
     drag() {
@@ -455,12 +731,18 @@ class SocialNetworkUI {
     async updateCommunities() {
         try {
             const communities = await this.socialNetwork.getCommunities();
+            this.cachedCommunities = communities; // Cache for color mapping
             const communitiesList = document.getElementById('communities-list');
+
+            const communityColors = [
+                '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+                '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6b7280'
+            ];
 
             communitiesList.innerHTML = communities.map((community, index) => `
                 <div class="community-item">
                     <div class="community-header">
-                        <span class="community-color" style="background: var(--community-${index % 10})"></span>
+                        <span class="community-color" style="background: ${communityColors[index % communityColors.length]}"></span>
                         <span class="community-title">Community ${index + 1}</span>
                         <span class="community-size">${community.length} members</span>
                     </div>
@@ -564,8 +846,11 @@ class SocialNetworkUI {
             .style('display', this.showLabels ? 'block' : 'none');
     }
 
-    toggleCommunities() {
+    async toggleCommunities() {
         this.showCommunities = !this.showCommunities;
+        if (this.showCommunities && (!this.cachedCommunities || this.cachedCommunities.length === 0)) {
+            this.cachedCommunities = await this.socialNetwork.getCommunities();
+        }
         this.renderGraph();
     }
 
@@ -605,23 +890,27 @@ class SocialNetworkUI {
         this.renderGraph();
     }
 
-    exportData() {
-        const data = {
-            users: this.socialNetwork.getAllUsers(),
-            connections: this.socialNetwork.getAllConnections(),
-            statistics: this.socialNetwork.getNetworkStats(),
-            communities: this.socialNetwork.getCommunities()
-        };
-        
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'social-network-data.json';
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        this.showToast('Data exported successfully', 'success');
+    async exportData() {
+        try {
+            const data = {
+                users: await this.socialNetwork.getAllUsers(),
+                graphData: await this.socialNetwork.getGraphData(),
+                statistics: await this.socialNetwork.getNetworkStats(),
+                communities: await this.socialNetwork.getCommunities()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'social-network-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            this.showToast('Data exported successfully', 'success');
+        } catch (error) {
+            this.showToast('Error exporting data', 'error');
+        }
     }
 
     showToast(message, type = 'info') {

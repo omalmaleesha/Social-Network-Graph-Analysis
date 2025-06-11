@@ -39,7 +39,7 @@ public class SocialNetwork {
 
     public List<String> suggestFriends(String user) {
         if (!users.containsKey(user)) {
-            return List.of();
+            return new ArrayList<>();
         }
         Set<String> directFriends = users.get(user).getFriends();
         Map<String, Integer> suggestionCount = new HashMap<>();
@@ -89,7 +89,11 @@ public class SocialNetwork {
             }
         }
 
-        if (!parent.containsKey(dest)) return List.of("No path found");
+        if (!parent.containsKey(dest)) {
+            List<String> noPath = new ArrayList<>();
+            noPath.add("No path found");
+            return noPath;
+        }
 
         List<String> path = new ArrayList<>();
         for (String at = dest; at != null; at = parent.get(at)) {
@@ -101,14 +105,18 @@ public class SocialNetwork {
 
     public List<String> findStrongestPath(String src, String dest) {
         if (!users.containsKey(src) || !users.containsKey(dest)) {
-            return List.of("No path found");
+            List<String> noPath = new ArrayList<>();
+            noPath.add("No path found");
+            return noPath;
         }
         return dijkstraPath(src, dest, true);
     }
 
     public List<String> findWeakestPath(String src, String dest) {
         if (!users.containsKey(src) || !users.containsKey(dest)) {
-            return List.of("No path found");
+            List<String> noPath = new ArrayList<>();
+            noPath.add("No path found");
+            return noPath;
         }
         return dijkstraPath(src, dest, false);
     }
@@ -143,7 +151,9 @@ public class SocialNetwork {
         }
 
         if (!distance.containsKey(dest)) {
-            return List.of("No path found");
+            List<String> noPath = new ArrayList<>();
+            noPath.add("No path found");
+            return noPath;
         }
 
         List<String> path = new ArrayList<>();
@@ -169,10 +179,10 @@ public class SocialNetwork {
     public List<String> getCommunity(String user) {
         String root = dsu.find(user);
         if (root == null) {
-            return List.of();
+            return new ArrayList<>();
         }
         Map<String, List<String>> communities = dsu.getCommunities();
-        return communities.getOrDefault(root, List.of());
+        return communities.getOrDefault(root, new ArrayList<>());
     }
 
     public List<String> getCommunitySummaries() {

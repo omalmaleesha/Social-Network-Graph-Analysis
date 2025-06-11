@@ -86,16 +86,158 @@ body {
     align-items: center;
 }
 
-/* Main Content Layout */
+/* Main Content Layout with Split Panes */
 .main-content {
-    display: flex;
     flex: 1;
     overflow: hidden;
+    position: relative;
+}
+
+/* Split Container Styles */
+.split-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.split-container.horizontal-split {
+    flex-direction: column;
+}
+
+.split-container.vertical-split {
+    flex-direction: row;
+}
+
+/* Split Pane Styles */
+.split-pane {
+    position: relative;
+    overflow: hidden;
+}
+
+.top-pane {
+    flex: 1;
+    min-height: 400px;
+}
+
+.bottom-pane {
+    flex: 0 0 250px;
+    min-height: 150px;
+    max-height: 400px;
+}
+
+.left-pane {
+    flex: 0 0 320px;
+    min-width: 250px;
+    max-width: 500px;
+}
+
+.center-pane {
+    flex: 1;
+    min-width: 400px;
+}
+
+.graph-pane {
+    flex: 1;
+    min-width: 300px;
+}
+
+.right-pane {
+    flex: 0 0 300px;
+    min-width: 200px;
+    max-width: 400px;
+}
+
+/* Splitter Styles */
+.splitter {
+    position: relative;
+    background: var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+}
+
+.splitter:hover {
+    background: var(--primary-color);
+}
+
+.splitter.dragging {
+    background: var(--primary-color);
+}
+
+.vertical-splitter {
+    width: 6px;
+    cursor: col-resize;
+    flex: 0 0 6px;
+}
+
+.horizontal-splitter {
+    height: 6px;
+    cursor: row-resize;
+    flex: 0 0 6px;
+}
+
+/* Splitter Handle and Grip */
+.splitter-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.splitter-grip {
+    background: var(--text-secondary);
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+}
+
+.vertical-splitter .splitter-grip {
+    width: 2px;
+    height: 30px;
+    box-shadow:
+        2px 0 0 var(--text-secondary),
+        -2px 0 0 var(--text-secondary);
+}
+
+.horizontal-splitter .splitter-grip {
+    width: 30px;
+    height: 2px;
+    box-shadow:
+        0 2px 0 var(--text-secondary),
+        0 -2px 0 var(--text-secondary);
+}
+
+.splitter:hover .splitter-grip {
+    background: white;
+    box-shadow:
+        2px 0 0 white,
+        -2px 0 0 white;
+}
+
+.horizontal-splitter:hover .splitter-grip {
+    box-shadow:
+        0 2px 0 white,
+        0 -2px 0 white;
+}
+
+/* Disable text selection during drag */
+.split-container.dragging {
+    user-select: none;
+}
+
+.split-container.dragging * {
+    pointer-events: none;
 }
 
 /* Sidebar */
 .sidebar {
-    width: 320px;
+    width: 100%;
+    height: 100%;
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
     overflow-y: auto;
@@ -279,7 +421,8 @@ body {
 
 /* Graph Container */
 .graph-container {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     background: var(--bg-primary);
@@ -348,7 +491,8 @@ body {
 
 /* Details Panel */
 .details-panel {
-    width: 300px;
+    width: 100%;
+    height: 100%;
     background: var(--bg-primary);
     border-left: 1px solid var(--border-color);
     overflow-y: auto;
@@ -386,7 +530,8 @@ body {
 
 /* Bottom Panel */
 .bottom-panel {
-    height: 250px;
+    width: 100%;
+    height: 100%;
     background: var(--bg-primary);
     border-top: 1px solid var(--border-color);
     display: flex;
@@ -514,35 +659,77 @@ body {
     }
 }
 
-/* Responsive Design */
+/* Responsive Design for Split Panes */
 @media (max-width: 1024px) {
-    .sidebar {
-        width: 280px;
+    .left-pane {
+        flex: 0 0 280px;
+        min-width: 220px;
+        max-width: 400px;
     }
-    
-    .details-panel {
-        width: 250px;
+
+    .right-pane {
+        flex: 0 0 250px;
+        min-width: 180px;
+        max-width: 350px;
+    }
+
+    .bottom-pane {
+        flex: 0 0 200px;
+        min-height: 120px;
+        max-height: 300px;
     }
 }
 
 @media (max-width: 768px) {
-    .main-content {
+    /* Disable splitters on mobile */
+    .splitter {
+        display: none;
+    }
+
+    /* Stack layout vertically on mobile */
+    .split-container.vertical-split {
         flex-direction: column;
     }
-    
-    .sidebar,
-    .details-panel {
+
+    .left-pane,
+    .right-pane,
+    .graph-pane {
+        flex: none;
         width: 100%;
         height: auto;
-        max-height: 300px;
     }
-    
-    .graph-container {
-        min-height: 400px;
+
+    .left-pane {
+        height: 300px;
+        min-height: 250px;
+        max-height: 400px;
     }
-    
-    .bottom-panel {
+
+    .graph-pane {
+        height: 400px;
+        min-height: 300px;
+    }
+
+    .right-pane {
+        height: 250px;
+        min-height: 200px;
+        max-height: 350px;
+    }
+
+    .bottom-pane {
         height: 200px;
+        min-height: 150px;
+        max-height: 250px;
+    }
+
+    /* Adjust sidebar and details panel for mobile */
+    .sidebar,
+    .details-panel {
+        padding: 1rem;
+    }
+
+    .sidebar-section {
+        padding: 1rem;
     }
 }
 
