@@ -261,25 +261,25 @@ class SocialNetworkUI {
         });
 
         // User management
-        document.getElementById('add-user-btn').addEventListener('click', () => {
-            this.addUser();
+        document.getElementById('add-user-btn').addEventListener('click', async () => {
+            await this.addUser();
         });
 
-        document.getElementById('add-friendship-btn').addEventListener('click', () => {
-            this.addFriendship();
+        document.getElementById('add-friendship-btn').addEventListener('click', async () => {
+            await this.addFriendship();
         });
 
         // Path finding
-        document.getElementById('shortest-path-btn').addEventListener('click', () => {
-            this.findPath('shortest');
+        document.getElementById('shortest-path-btn').addEventListener('click', async () => {
+            await this.findPath('shortest');
         });
 
-        document.getElementById('strongest-path-btn').addEventListener('click', () => {
-            this.findPath('strongest');
+        document.getElementById('strongest-path-btn').addEventListener('click', async () => {
+            await this.findPath('strongest');
         });
 
-        document.getElementById('weakest-path-btn').addEventListener('click', () => {
-            this.findPath('weakest');
+        document.getElementById('weakest-path-btn').addEventListener('click', async () => {
+            await this.findPath('weakest');
         });
 
         // Graph controls
@@ -295,8 +295,8 @@ class SocialNetworkUI {
             this.toggleLabels();
         });
 
-        document.getElementById('toggle-communities').addEventListener('click', () => {
-            this.toggleCommunities();
+        document.getElementById('toggle-communities').addEventListener('click', async () => {
+            await this.toggleCommunities();
         });
 
         // Details panel
@@ -305,18 +305,28 @@ class SocialNetworkUI {
         });
 
         // Friend suggestions
-        document.getElementById('get-suggestions-btn').addEventListener('click', () => {
-            this.getFriendSuggestions();
+        document.getElementById('get-suggestions-btn').addEventListener('click', async () => {
+            await this.getFriendSuggestions();
         });
 
         // Export functionality
-        document.getElementById('export-btn').addEventListener('click', () => {
-            this.exportData();
+        document.getElementById('export-btn').addEventListener('click', async () => {
+            await this.exportData();
         });
 
         // Enter key support for inputs
-        document.getElementById('user-name').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addUser();
+        document.getElementById('user-name').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') await this.addUser();
+        });
+
+        // Event delegation for suggestion buttons
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.add-suggestion-btn')) {
+                const button = e.target.closest('.add-suggestion-btn');
+                const user1 = button.dataset.user1;
+                const user2 = button.dataset.user2;
+                await this.addSuggestedFriend(user1, user2);
+            }
         });
     }
 
@@ -778,7 +788,7 @@ class SocialNetworkUI {
                         ${suggestions.map(suggestion => `
                             <div class="suggestion-item">
                                 <span class="suggestion-name">${suggestion}</span>
-                                <button class="btn btn-sm btn-primary" onclick="app.addSuggestedFriend('${user}', '${suggestion}')">
+                                <button class="btn btn-sm btn-primary add-suggestion-btn" data-user1="${user}" data-user2="${suggestion}">
                                     <i class="fas fa-plus"></i> Add
                                 </button>
                             </div>

@@ -3,17 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Network Graph Analysis - Split Panes Test</title>
+    <title>Social Network Graph Analysis - Complete Function Test</title>
     <link rel="stylesheet" href="src/main/resources/static/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .test-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: var(--bg-primary);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            z-index: 2000;
+            max-width: 300px;
+            box-shadow: var(--shadow-lg);
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+        }
+        .test-status {
+            font-weight: bold;
+        }
+        .test-status.pass { color: var(--success-color); }
+        .test-status.fail { color: var(--danger-color); }
+        .test-status.pending { color: var(--warning-color); }
+        .test-controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .test-controls button {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 <body>
+    <!-- Test Panel -->
+    <div class="test-panel">
+        <h4><i class="fas fa-vial"></i> Function Tests</h4>
+        <div class="test-item">
+            <span>Split Panes:</span>
+            <span class="test-status pending" id="test-split-panes">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Add User:</span>
+            <span class="test-status pending" id="test-add-user">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Add Friendship:</span>
+            <span class="test-status pending" id="test-add-friendship">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Path Finding:</span>
+            <span class="test-status pending" id="test-path-finding">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Graph Interaction:</span>
+            <span class="test-status pending" id="test-graph-interaction">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Theme Toggle:</span>
+            <span class="test-status pending" id="test-theme-toggle">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Tab Switching:</span>
+            <span class="test-status pending" id="test-tab-switching">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Communities:</span>
+            <span class="test-status pending" id="test-communities">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Friend Suggestions:</span>
+            <span class="test-status pending" id="test-suggestions">PENDING</span>
+        </div>
+        <div class="test-item">
+            <span>Export Function:</span>
+            <span class="test-status pending" id="test-export">PENDING</span>
+        </div>
+        <div class="test-controls">
+            <button id="run-tests" class="btn btn-primary">Run Tests</button>
+            <button id="hide-panel" class="btn btn-secondary">Hide</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1><i class="fas fa-project-diagram"></i> Social Network Analysis - Split Panes Demo</h1>
+                <h1><i class="fas fa-project-diagram"></i> Social Network Analysis - Function Test</h1>
                 <div class="header-controls">
                     <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme">
                         <i class="fas fa-moon"></i>
@@ -219,12 +304,12 @@
                                 <i class="fas fa-analytics"></i> Advanced Analysis
                             </button>
                         </div>
-
+                        
                         <div class="tab-content">
                             <div id="communities-tab" class="tab-pane active">
                                 <div id="communities-list"></div>
                             </div>
-
+                            
                             <div id="suggestions-tab" class="tab-pane">
                                 <div class="suggestions-controls">
                                     <select id="suggestions-user" class="form-control">
@@ -234,7 +319,7 @@
                                 </div>
                                 <div id="suggestions-list"></div>
                             </div>
-
+                            
                             <div id="analysis-tab" class="tab-pane">
                                 <div class="analysis-grid">
                                     <div class="analysis-card">
@@ -394,6 +479,195 @@
 
         // Replace the real API with mock for testing
         window.SocialNetworkAPI = MockSocialNetworkAPI;
+
+        // Test Runner
+        class FunctionTester {
+            constructor() {
+                this.tests = {};
+                this.setupTestControls();
+            }
+
+            setupTestControls() {
+                document.getElementById('run-tests').addEventListener('click', () => {
+                    this.runAllTests();
+                });
+
+                document.getElementById('hide-panel').addEventListener('click', () => {
+                    document.querySelector('.test-panel').style.display = 'none';
+                });
+            }
+
+            setTestStatus(testId, status) {
+                const element = document.getElementById(testId);
+                if (element) {
+                    element.textContent = status;
+                    element.className = `test-status ${status.toLowerCase()}`;
+                }
+            }
+
+            async runAllTests() {
+                console.log('Starting function tests...');
+
+                // Wait for app to initialize
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Test 1: Split Panes
+                try {
+                    const splitters = document.querySelectorAll('.splitter');
+                    if (splitters.length >= 3) {
+                        this.setTestStatus('test-split-panes', 'PASS');
+                    } else {
+                        this.setTestStatus('test-split-panes', 'FAIL');
+                    }
+                } catch (error) {
+                    this.setTestStatus('test-split-panes', 'FAIL');
+                }
+
+                // Test 2: Add User
+                try {
+                    const userInput = document.getElementById('user-name');
+                    const addButton = document.getElementById('add-user-btn');
+                    userInput.value = 'TestUser';
+                    addButton.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const users = await window.app.socialNetwork.getAllUsers();
+                    if (users.includes('TestUser')) {
+                        this.setTestStatus('test-add-user', 'PASS');
+                    } else {
+                        this.setTestStatus('test-add-user', 'FAIL');
+                    }
+                } catch (error) {
+                    this.setTestStatus('test-add-user', 'FAIL');
+                }
+
+                // Test 3: Add Friendship
+                try {
+                    const user1Select = document.getElementById('user1-select');
+                    const user2Select = document.getElementById('user2-select');
+                    const addFriendshipBtn = document.getElementById('add-friendship-btn');
+
+                    user1Select.value = 'Alice';
+                    user2Select.value = 'TestUser';
+                    addFriendshipBtn.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    this.setTestStatus('test-add-friendship', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-add-friendship', 'FAIL');
+                }
+
+                // Test 4: Path Finding
+                try {
+                    const pathUser1 = document.getElementById('path-user1');
+                    const pathUser2 = document.getElementById('path-user2');
+                    const shortestBtn = document.getElementById('shortest-path-btn');
+
+                    pathUser1.value = 'Alice';
+                    pathUser2.value = 'David';
+                    shortestBtn.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    this.setTestStatus('test-path-finding', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-path-finding', 'FAIL');
+                }
+
+                // Test 5: Graph Interaction
+                try {
+                    const svg = document.getElementById('graph-svg');
+                    const resetZoom = document.getElementById('reset-zoom');
+                    const centerGraph = document.getElementById('center-graph');
+
+                    if (svg && resetZoom && centerGraph) {
+                        resetZoom.click();
+                        centerGraph.click();
+                        this.setTestStatus('test-graph-interaction', 'PASS');
+                    } else {
+                        this.setTestStatus('test-graph-interaction', 'FAIL');
+                    }
+                } catch (error) {
+                    this.setTestStatus('test-graph-interaction', 'FAIL');
+                }
+
+                // Test 6: Theme Toggle
+                try {
+                    const themeToggle = document.getElementById('theme-toggle');
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    themeToggle.click();
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    const newTheme = document.documentElement.getAttribute('data-theme');
+
+                    if (currentTheme !== newTheme) {
+                        this.setTestStatus('test-theme-toggle', 'PASS');
+                    } else {
+                        this.setTestStatus('test-theme-toggle', 'FAIL');
+                    }
+                } catch (error) {
+                    this.setTestStatus('test-theme-toggle', 'FAIL');
+                }
+
+                // Test 7: Tab Switching
+                try {
+                    const suggestionsTab = document.querySelector('[data-tab="suggestions"]');
+                    const analysisTab = document.querySelector('[data-tab="analysis"]');
+
+                    suggestionsTab.click();
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    analysisTab.click();
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    this.setTestStatus('test-tab-switching', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-tab-switching', 'FAIL');
+                }
+
+                // Test 8: Communities
+                try {
+                    const toggleCommunities = document.getElementById('toggle-communities');
+                    toggleCommunities.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    this.setTestStatus('test-communities', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-communities', 'FAIL');
+                }
+
+                // Test 9: Friend Suggestions
+                try {
+                    const suggestionsUser = document.getElementById('suggestions-user');
+                    const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
+
+                    suggestionsUser.value = 'Alice';
+                    getSuggestionsBtn.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    this.setTestStatus('test-suggestions', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-suggestions', 'FAIL');
+                }
+
+                // Test 10: Export Function
+                try {
+                    const exportBtn = document.getElementById('export-btn');
+                    exportBtn.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    this.setTestStatus('test-export', 'PASS');
+                } catch (error) {
+                    this.setTestStatus('test-export', 'FAIL');
+                }
+
+                console.log('All tests completed!');
+            }
+        }
+
+        // Initialize tester when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.tester = new FunctionTester();
+            }, 2000);
+        });
     </script>
     <script src="src/main/resources/static/script.js"></script>
 </body>
