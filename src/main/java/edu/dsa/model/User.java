@@ -1,21 +1,19 @@
 package edu.dsa.model;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Getter
+@RequiredArgsConstructor
 public class User {
-    private String name;
-    private Map<String, Integer> friendsWithWeights;
-
-    public User(String name) {
-        this.name = name;
-        this.friendsWithWeights = new HashMap<>();
-    }
-
-    public String getName() {
-        return name;
-    }
+    @NonNull
+    private final String name;
+    private final Map<String, Integer> friendsWithWeights = new HashMap<>();
 
     public Set<String> getFriends() {
         return friendsWithWeights.keySet();

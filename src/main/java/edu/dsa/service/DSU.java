@@ -1,10 +1,13 @@
 package edu.dsa.service;
 
+import lombok.Getter;
+
 import java.util.*;
 
+@Getter
 public class DSU {
-    private Map<String, String> parent = new HashMap<>();
-    private Map<String, Integer> rank = new HashMap<>();
+    private final Map<String, String> parent = new HashMap<>();
+    private final Map<String, Integer> rank = new HashMap<>();
 
     public void addUser(String user) {
         parent.put(user, user);
