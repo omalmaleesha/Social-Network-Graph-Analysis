@@ -7,7 +7,5 @@ public interface CentralityService {
     String getUserWithHighestCloseness();
     double getPageRank(String user);
     String getMostInfluentialUser();
-    double getBetweennessCentrality(String user);
-    String getHighestBetweennessUser();
     double getClusteringCoefficient(String user);
 }

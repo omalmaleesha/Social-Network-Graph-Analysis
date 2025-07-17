@@ -6,6 +6,4 @@ import java.util.Map;
 public interface CommunityService {
     int getNumberOfCommunities();
     Map<String, List<String>> getCommunities();
-    List<String> getCommunity(String user);
-    List<String> getCommunitySummaries();
 }

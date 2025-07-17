@@ -37,53 +37,7 @@ public class NetworkAnalysisServiceImpl implements NetworkAnalysisService {
         return count > 0 ? sum / count : 0.0;
     }
 
-    @Override
-    public int getTriangleCount(String user) {
-        if (!userService.userExists(user)) return 0;
-        Set<String> friends = userService.getUsers().get(user).getFriends();
-        int triangles = 0;
-        for (String f1 : friends) {
-            for (String f2 : friends) {
-                if (!f1.equals(f2) && userService.getUsers().get(f1).getFriends().contains(f2)) {
-                    triangles++;
-                }
-            }
-        }
-        return triangles / 2;
-    }
 
-    @Override
-    public int getNetworkTriangleCount() {
-        int total = 0;
-        for (String user : userService.getAllUsers()) {
-            total += getTriangleCount(user);
-        }
-        return total / 3;
-    }
-
-    @Override
-    public Set<String> findInfluencers(int k) {
-        Set<String> influencers = new HashSet<>();
-        for (int i = 0; i < k; i++) {
-            String bestUser = null;
-            double maxMarginalGain = -1;
-            for (String user : userService.getAllUsers()) {
-                if (!influencers.contains(user)) {
-                    double gain = estimateMarginalGain(influencers, user);
-                    if (gain > maxMarginalGain) {
-                        maxMarginalGain = gain;
-                        bestUser = user;
-                    }
-                }
-            }
-            if (bestUser != null) influencers.add(bestUser);
-        }
-        return influencers;
-    }
-
-    private double estimateMarginalGain(Set<String> currentSet, String user) {
-        return userService.getUsers().get(user).getFriends().size();
-    }
 
     private double getClusteringCoefficient(String user) {
         if (!userService.userExists(user)) return 0.0;

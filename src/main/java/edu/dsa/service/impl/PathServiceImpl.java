@@ -58,20 +58,12 @@ public class PathServiceImpl implements PathService {
             noPath.add("No path found");
             return noPath;
         }
-        return dijkstraPath(src, dest, true);
+        return dijkstraStrongestPath(src, dest);
     }
 
-    @Override
-    public List<String> findWeakestPath(String src, String dest) {
-        if (!userService.userExists(src) || !userService.userExists(dest)) {
-            List<String> noPath = new ArrayList<>();
-            noPath.add("No path found");
-            return noPath;
-        }
-        return dijkstraPath(src, dest, false);
-    }
 
-    private List<String> dijkstraPath(String src, String dest, boolean isStrongest) {
+
+    private List<String> dijkstraStrongestPath(String src, String dest) {
         Map<String, Double> distance = new HashMap<>();
         distance.put(src, 0.0);
         Map<String, String> parent = new HashMap<>();
@@ -90,7 +82,7 @@ public class PathServiceImpl implements PathService {
 
             for (String v : userService.getUsers().get(u).getFriends()) {
                 int weight = friendshipService.getFriendshipWeight(u, v);
-                double cost = isStrongest ? 1.0 / weight : weight;
+                double cost = 1.0 / weight;
                 double newDist = distU + cost;
                 if (newDist < distance.getOrDefault(v, Double.POSITIVE_INFINITY)) {
                     distance.put(v, newDist);

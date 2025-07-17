@@ -97,33 +97,7 @@ public class CentralityServiceImpl implements CentralityService {
         return mostInfluential;
     }
 
-    @Override
-    public double getBetweennessCentrality(String user) {
-        if (!userService.userExists(user)) return 0.0;
-        double betweenness = 0.0;
-        for (String s : userService.getAllUsers()) {
-            for (String t : userService.getAllUsers()) {
-                if (!s.equals(t) && !s.equals(user) && !t.equals(user)) {
-                    // Implementation requires tracking all shortest paths
-                }
-            }
-        }
-        return betweenness / ((userService.getAllUsers().size() - 1) * (userService.getAllUsers().size() - 2) / 2);
-    }
 
-    @Override
-    public String getHighestBetweennessUser() {
-        String maxUser = null;
-        double maxBetweenness = -1.0;
-        for (String user : userService.getAllUsers()) {
-            double betweenness = getBetweennessCentrality(user);
-            if (betweenness > maxBetweenness) {
-                maxBetweenness = betweenness;
-                maxUser = user;
-            }
-        }
-        return maxUser;
-    }
 
     @Override
     public double getClusteringCoefficient(String user) {

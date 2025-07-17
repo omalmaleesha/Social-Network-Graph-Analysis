@@ -186,9 +186,6 @@ public class SocialNetworkController {
             case "strongest":
                 path = socialNetwork.findStrongestPath(user1, user2);
                 break;
-            case "weakest":
-                path = socialNetwork.findWeakestPath(user1, user2);
-                break;
             default:
                 path = socialNetwork.shortestPath(user1, user2);
                 break;

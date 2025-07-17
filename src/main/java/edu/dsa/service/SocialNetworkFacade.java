@@ -52,9 +52,7 @@ public class SocialNetworkFacade {
         return pathService.findStrongestPath(src, dest);
     }
 
-    public List<String> findWeakestPath(String src, String dest) {
-        return pathService.findWeakestPath(src, dest);
-    }
+
 
     // Community Analysis
     public int getNumberOfCommunities() {
@@ -65,13 +63,7 @@ public class SocialNetworkFacade {
         return communityService.getCommunities();
     }
 
-    public List<String> getCommunity(String user) {
-        return communityService.getCommunity(user);
-    }
 
-    public List<String> getCommunitySummaries() {
-        return communityService.getCommunitySummaries();
-    }
 
     // Centrality Measures
     public int getDegreeCentrality(String user) {
@@ -98,13 +90,7 @@ public class SocialNetworkFacade {
         return centralityService.getMostInfluentialUser();
     }
 
-    public double getBetweennessCentrality(String user) {
-        return centralityService.getBetweennessCentrality(user);
-    }
 
-    public String getHighestBetweennessUser() {
-        return centralityService.getHighestBetweennessUser();
-    }
 
     public double getClusteringCoefficient(String user) {
         return centralityService.getClusteringCoefficient(user);
@@ -119,24 +105,12 @@ public class SocialNetworkFacade {
         return networkAnalysisService.getAverageClusteringCoefficient();
     }
 
-    public int getTriangleCount(String user) {
-        return networkAnalysisService.getTriangleCount(user);
-    }
 
-    public int getNetworkTriangleCount() {
-        return networkAnalysisService.getNetworkTriangleCount();
-    }
-
-    public Set<String> findInfluencers(int k) {
-        return networkAnalysisService.findInfluencers(k);
-    }
 
     // Recommendations
     public List<String> suggestFriends(String user) {
         return recommendationService.suggestFriends(user);
     }
 
-    public List<String> predictNewFriends(String user, int topN) {
-        return recommendationService.predictNewFriends(user, topN);
-    }
+
 }

@@ -43,24 +43,5 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<String> predictNewFriends(String user, int topN) {
-        Map<String, Integer> scores = new HashMap<>();
-        Set<String> friends = userService.getUsers().get(user).getFriends();
-        for (String other : userService.getAllUsers()) {
-            if (!other.equals(user) && !friends.contains(other)) {
-                Set<String> otherFriends = userService.getUsers().get(other).getFriends();
-                int common = 0;
-                for (String f : friends) {
-                    if (otherFriends.contains(f)) common++;
-                }
-                scores.put(other, common);
-            }
-        }
-        return scores.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(topN)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-    }
+
 }
